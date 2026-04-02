@@ -1,0 +1,201 @@
+---
+title: "United Kingdom’s Carbon Monoxide emissions Project"
+format: html
+editor: visual
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+***Question :- “What trends and turning points can be identified in United Kingdom's Carbon Monoxide emissions over time?”***
+
+```{r}
+library(readr)
+library(tidyverse)
+air_pollutants <- read_csv("https://ourworldindata.org/grapher/long-run-air-pollution.csv?v=1&csvType=full&useColumnShortNames=true")
+head( air_pollutants)
+```
+- Dataset now has data about various countries and regions.  
+
+```{r}
+# Selecting only CO emission column and UK for rows for the analysis. 
+air_pollutants_UKCO <- air_pollutants %>% 
+  select(entity, code, year, emissions__pollutant_co__sector_all_sectors) %>% 
+  rename("CO" = "emissions__pollutant_co__sector_all_sectors") %>% 
+  filter( entity == "United Kingdom")
+
+#Cleaning Dataset
+colSums((is.na(air_pollutants_UKCO))) #No missing data found
+
+air_pollutants_UKCO <- air_pollutants_UKCO %>% #Removing duplicate rows
+  distinct()
+```
+- Dataset now is filtered for United Kingdom and free of duplicates.  
+```{r}
+air_pollutants_UKCO <- air_pollutants_UKCO %>% 
+  mutate(Colour = case_when( year < 1921 ~ "Pre-war",
+                             year >= 1921 & year < 1956 ~ "Post-war",
+                             year >= 1956 & year < 1990 ~ "Clean Air Act",
+                             year >= 1990 ~ "UK Act"
+  ))
+
+
+ggplot() +
+  geom_line( data = air_pollutants_UKCO, 
+    aes( x = year, y = CO, colour = Colour),
+    lwd = 0.8
+    ) +
+  labs(
+    x = "Year",
+    y = "Carbon Monoxide Emissions per year",
+    title  = "Carbon Monoxide Emissions in United Kingdom per year in tonnes",
+    subtitle = "From 1750 - 2022",
+    caption = "Source : Hoesly et al - Community Emissions Data System (CEDS)"
+  ) + 
+  geom_point(
+    data = air_pollutants_UKCO%>% filter(year %in% c(1921, 1956, 1990)),
+    aes(x = year, y = CO, color = Colour),
+    size = 3
+  ) +
+annotate(
+"text",
+x = 1921, 
+y = 4500000, 
+label = "Post war\nIndustrial expansion\n(1921)",
+hjust = 0,
+size = 3.5,
+colour = "red"
+) + 
+  annotate(
+"text",
+x = 1965, 
+y = 14000000, 
+label = "Introduction of\nClean Air Act (1956)",
+hjust = 0,
+size = 3.5,
+colour = "goldenrod"
+) + 
+  annotate(
+"text",
+x = 1975, 
+y = 10500000, 
+label = "UK\nenvironmental\nprotection act\n(1990)",
+hjust = 0,
+size = 3.5,
+colour = "forestgreen"
+) + 
+  scale_colour_manual(
+  values = c("Pre-war" = "steelblue", "Post-war" = "red", "Clean Air Act" = "goldenrod", "UK Act" = "forestgreen")
+  ) +
+scale_x_continuous(breaks = seq(1750, 2022, by = 20),
+  minor_breaks = seq(1750, 2022, by = 5)) +
+  expand_limits(y=0) +
+  theme_minimal() +
+   theme(
+   plot.caption = element_text(size=6,color="gray",face="italic")
+  )
+```
+- Graph shows carbon monoxide emissions from 1750 to 2023. It clearly shows there was a serious increase in emissions and it reached aa peak at some year and then it started to reduce.  
+- Further, the graph shows different region of time where emissions has significant change. Red section are shows how after 1921's post-war industrial expansion emission started to increase rapidly.    
+- And it reached to its peak until Clean Air Act was introduced in 1956 and emissions decreased after that. Which is highlighted by the yellow region.  
+- Then, 1990's United Kingdom Environmental Protection Act was the final nail, from where it showed a further decrease. Which is highlighted by the green region.  
+```{r}
+
+ggplot() +
+   geom_vline(xintercept = 1921, linetype = "dashed", colour = "grey50") +
+   geom_vline(xintercept = 1956, linetype = "dashed", colour = "grey50") +
+   geom_vline(xintercept = 1990, linetype = "dashed", colour = "grey50") +
+  geom_line( data = air_pollutants_UKCO,
+    aes( x = year, y = CO), colour = "steelblue",
+    lwd = 0.8)  +
+geom_smooth(
+  data = air_pollutants_UKCO,
+  aes(x = year, y = CO),
+  method = "gam",
+  colour = "red",
+  linewidth = 1,
+  se = FALSE
+) + 
+  labs(
+    x = "Year",
+    y = "Emission of Carbon Monoxide in UK over the years",
+    title  = "Emissions of Carbon Monoxide in United Kingdom per year in tonnes",
+    subtitle = "From 1750 - 2022",
+    caption = "Source : Hoesly et al - Community Emissions Data System (CEDS)\n1921* - Post was Industrial Expansion\n1956* - Introduction to clean air act\n1990* - UK environmental protection act"
+  ) +
+  annotate(
+"text",
+x = 1897, 
+y = 14000000, 
+label = "1921*",
+hjust = 0,
+size = 3.5,
+colour = "grey50"
+) + 
+  annotate(
+"text",
+x = 1932, 
+y = 14000000, 
+label = "1956*",
+hjust = 0,
+size = 3.5,
+colour = "grey50"
+) + 
+  annotate(
+"text",
+x = 1966, 
+y = 14000000, 
+label = "1990*",
+hjust = 0,
+size = 3.5,
+colour = "grey50"
+) +
+    scale_x_continuous(breaks = seq(1750, 2022, by = 20),
+  minor_breaks = seq(1750, 2022, by = 5)) +
+  scale_y_continuous(breaks = seq(0, 20000000, by = 1000000)) +
+  expand_limits(y=0) +
+ theme_minimal() +
+  theme(
+   plot.caption = element_text(size=8,color="gray",face="italic")
+  )
+
+```
+- Smoothened graph clearly shows that the period between 1921 and 1956 had the most emissions. And after Clean Air Act and United Kingdom Environmental Protection Act there was a drastic decrease in emissions.  
+- It alos suggests that emssions trend is a curve and not a line.  
+```{r}
+model_co_poly <- lm(CO ~ year + I(year^2), data = air_pollutants_UKCO)
+summary(model_co_poly)
+
+b1 <- coef(model_co_poly)["year"]
+b2 <- coef(model_co_poly)["I(year^2)"]
+
+turning_point <- -b1 / (2 * b2)
+turning_point
+
+ggplot(air_pollutants_UKCO,
+       aes(x = year, y = CO)
+      ) +
+  geom_point(color = "darkgrey") +
+  labs(
+    x = "Year",
+    y = "CO Emissions",
+    title = "CO Emissions vs Year (UK)",
+  ) +
+  geom_smooth(method = lm, 
+              formula = y ~ poly(x,2), 
+              color = "red", se = FALSE
+              ) +
+  theme_minimal()
+```
+- The positive coefficient for year and negative coefficient for year squared indicate an there was an increase at start and then followed by a decline after reaching a peak.  
+- The model explains approximately 63% of the variation in CO emissions (R² = 0.63), indicating a reasonably strong relationship between time and emissions.  
+- Model indicated year 1925.342 was the year of maximum emissions. This was the turning point from where emissions started to decrease.   
+
+
+***Conclusion***  
+
+- This analysis examined long-run carbon monoxide emissions in the United Kingdom.  
+- The visualisations show that emissions increased over time before reaching a peak and then declining in later years.  
+- A quadratic regression model supported this non-linear pattern, indicating that CO emissions did not follow a simple linear trend.  
+- Overall, the results suggest a strong historical shift in UK emissions over time, consistent with industrial growth followed by later environmental control and technological change.
