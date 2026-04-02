@@ -9,7 +9,7 @@ Analysis of long-term carbon monoxide emissions in the United Kingdom using R.
 
 - Emissions increased during early industrial growth  
 - A clear peak is observed  
-- Emissions declined in later years  
+- Emissions declined in later years with introduction of environmental acts.   
 - A quadratic model confirms a non-linear trend  
 
 **Methods**
