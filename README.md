@@ -14,11 +14,11 @@ A quadratic model confirms a non-linear trend
 
 **Methods**
 
-Data cleaning using R
-Visualisation with ggplot2
-Quadratic regression modelling
+Data cleaning using R  
+Visualisation with ggplot2  
+Quadratic regression modelling  
 
 **Files**
 
-UK CO emissions Project.qmd → source code
-UK CO emissions Project.html → final report
+- UK CO emissions Project.qmd → source code  
+- UK CO emissions Project.html → final report
