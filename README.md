@@ -3,7 +3,7 @@ Analysis of long-term carbon monoxide emissions in the United Kingdom using R.
 
 **Overview**
 
-- This project analyses long-term trends in carbon monoxide (CO) emissions in the United Kingdom using historical data.
+This project analyses long-term trends in carbon monoxide (CO) emissions in the United Kingdom using historical data.
 
 **Key findings**
 
