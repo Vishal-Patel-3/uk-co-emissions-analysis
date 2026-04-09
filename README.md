@@ -9,7 +9,7 @@ This project analyses long-term trends in carbon monoxide (CO) emissions in the 
 
 - Emissions increased during early industrial growth  
 - A clear peak is observed  
-- Emissions declined in later years with introduction of environmental acts.   
+- Emissions declined in later years with introduction of environmental acts
 - A quadratic model confirms a non-linear trend  
 
 **Methods**
